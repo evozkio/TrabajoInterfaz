@@ -1,17 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="panel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#personajeMove" onKeyReleased="#personajeStop" prefHeight="393.0" prefWidth="710.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Juego">
+<AnchorPane fx:id="panel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#pressKey" onKeyReleased="#releaseKey" onMouseClicked="#mouseClick" prefHeight="430.0" prefWidth="710.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Juego">
    <children>
-      <ImageView fx:id="fondo" fitHeight="400.0" fitWidth="756.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="fondoJuego" fitHeight="447.0" fitWidth="710.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imagen/mountains-pixel.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="boton" layoutX="29.0" layoutY="30.0" mnemonicParsing="false" onAction="#actionBoton" text="Button" />
+      <Button fx:id="boton" layoutY="400.0" mnemonicParsing="false" onAction="#actionBoton" prefHeight="30.0" prefWidth="94.0" text="Iniciar" />
+      <ImageView fitHeight="110.0" fitWidth="710.0" layoutY="374.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagen/suelo.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="tiempo" alignment="CENTER" layoutX="1.0" layoutY="398.0" prefHeight="35.0" prefWidth="710.0" text="TIME" textFill="RED">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="mensaje" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="165.0" prefHeight="70.0" prefWidth="710.0" text="CONGRATULATIONS">
+         <font>
+            <Font size="48.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="corazon3" fitHeight="30.0" fitWidth="48.0" layoutX="667.0" layoutY="399.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagen/corazones%20.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="corazon2" fitHeight="30.0" fitWidth="48.0" layoutX="633.0" layoutY="399.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagen/corazones%20.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="corazon1" fitHeight="30.0" fitWidth="48.0" layoutX="599.0" layoutY="399.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imagen/corazones%20.png" />
+         </image>
+      </ImageView>
+      <AnchorPane fx:id="fondo" layoutX="-5.0" layoutY="394.0" prefHeight="41.0" prefWidth="716.0" style="-fx-background-color: black;" />
    </children>
 </AnchorPane>
