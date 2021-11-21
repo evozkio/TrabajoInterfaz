@@ -2,15 +2,15 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -20,9 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import model.Ball;
 
 public class Juego implements Initializable {
@@ -34,7 +31,11 @@ public class Juego implements Initializable {
         private Boolean izquierdaI = true;
         private Image imagenDisparo = new Image("/imagen/disparos.png");
         private Image imagenpersonaje = new Image("/imagen/Personaje.png");
+        private LocalTime temporizador;
+        private LocalTime inicioTemporizador;
+        
 
+        @FXML private Label tiempo;
         @FXML private ImageView fondoJuego;
         @FXML private AnchorPane fondo;
         @FXML private Button boton;
@@ -64,12 +65,9 @@ public class Juego implements Initializable {
         }
 
         private void inicioBall() {
-                if (listaball.size() == 0) {
-                        listaball.add(new Ball(100.0, 200.0, 0.5, true));
-                        panel.getChildren().add(listaball.getLast().getImageView());
-                } else {
-                        divisionBall(listaball.getFirst());
-                }
+                listaball.add(new Ball(310.0, 50.0, 0.5, true));
+                panel.getChildren().add(listaball.getLast().getImageView());
+             
         }
 
         private void divisionBall(Ball ball) {
@@ -112,6 +110,13 @@ public class Juego implements Initializable {
                 }
         }
 
+        private void eliminarball() {
+                for (Ball ball : listaball) {
+                        panel.getChildren().remove(ball.getImageView());
+                }
+                listaball.clear();
+        }
+
         public void vidas(){
                 if (contador == 3){
                         corazon1.setVisible(true);
@@ -136,6 +141,9 @@ public class Juego implements Initializable {
                                         corazon3.setVisible(false);
                                         movimiento.stop();
                                         mensaje.setText("Has Perdido");
+                                        eliminarball();
+                                        boton.setText("Iniciar");
+                                        juego =false;
                                 }
                         }
 
@@ -144,45 +152,56 @@ public class Juego implements Initializable {
 
     
 
+
+
+       
+
         @FXML
         private void actionBoton(ActionEvent event) throws IOException {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/vista/AleJuego.fxml"));
-			
-                Stage stage = new Stage();
-                Pane root = loader.load();
-                
-                Scene scene = new Scene(root);
-                stage.initModality(Modality.APPLICATION_MODAL);
-                
-                
-                stage.setScene(scene);
-                stage.showAndWait();
-                stage.setTitle("Hola");
+               if(boton.getText().equals("Iniciar")){
+                       boton.setText("disparar");
+                       juego= true;
+                       inicioBall();
+                       mensaje.setText("");
+                       personaje.setX(350);
+                       movimiento.start();
+                       contador = 3;
+                       vidas();
+                       inicioTemporizador = LocalTime.now();
+                       temporizador = inicioTemporizador.plusSeconds(60);
+                       tiempo.setText("60");
+
+               }else{
+                       disparar();
+               }
         }
 
         @FXML
         public void mouseClick(MouseEvent mouse) {
-                if (mouse.getButton().equals(MouseButton.PRIMARY)) {
-                        disparar();
+                if(juego){
+                        if (mouse.getButton().equals(MouseButton.PRIMARY)) {
+                                disparar();
+                        }
                 }
         }
 
         @FXML
         public void pressKey(KeyEvent key) {
-                if (!(pressA && pressD)) {
-                        if (key.getCode().equals(KeyCode.A)) {
-                                pressA = true;
-                                movimiento.start();
-                        }
-                        if (key.getCode().equals(KeyCode.D)) {
-                                pressD = true;
-                                movimiento.start();
-                        }
-                }
-                if (key.getCode().equals(KeyCode.Q)) {
-                        disparar();
-                }
+                if(juego){
 
+                        if (!(pressA && pressD)) {
+                                if (key.getCode().equals(KeyCode.A)) {
+                                        pressA = true;
+                                        movimiento.start();
+                                }
+                                if (key.getCode().equals(KeyCode.D)) {
+                                        pressD = true;
+                                        movimiento.start();
+                                }
+                        }
+                }
+                
+                
         }
 
         @FXML
@@ -229,6 +248,18 @@ public class Juego implements Initializable {
                         }
                         if (listaball.size() == 0) {
                                 mensaje.setText("Has ganado");
+                                boton.setText("Iniciar");
+                                juego= false;
+                        }
+                        inicioTemporizador= LocalTime.now();
+                        if(temporizador.isAfter(inicioTemporizador)){
+                                tiempo.setText(String.valueOf(inicioTemporizador.until(temporizador, ChronoUnit.SECONDS)%60));
+                        }else{
+                                movimiento.stop();
+                                mensaje.setText("Has Perdido");
+                                eliminarball();
+                                boton.setText("Iniciar");
+                                juego =false;
                         }
                         golpePersonaje();
                 }
@@ -286,8 +317,6 @@ public class Juego implements Initializable {
                 movimientodisparo.start();
                 efectosball.start();
                 mensaje.setText("");
-
-                inicioBall();
 
         }
 
