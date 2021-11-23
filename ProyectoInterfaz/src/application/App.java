@@ -22,7 +22,7 @@ public class App extends Application{
 		Scene scene = new Scene(pane);
 		stage.setScene(scene);
         stage.requestFocus();
-		// stage.setResizable(false);
+		stage.setResizable(false);
 		stage.setTitle("Super Pang");
 		stage.show();
 	}
