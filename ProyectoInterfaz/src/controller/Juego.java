@@ -32,7 +32,10 @@ public class Juego implements Initializable {
         private Image imagenDisparo = new Image("/imagen/disparos.png");
         private Image imagenpersonaje = new Image("/imagen/Personaje.png");
         private LocalTime temporizador;
-        private LocalTime inicioTemporizador;
+        private LocalTime calculoteporizador;
+        private Boolean Golpeado =false;
+        private LocalTime tiempoGolpe;
+
         
 
         @FXML private Label tiempo;
@@ -63,11 +66,25 @@ public class Juego implements Initializable {
                 }
 
         }
+        private void victoria(){
+                if (listaball.size() == 0) {
+                        mensaje.setText("Has ganado");
+                        boton.setText("Iniciar");
+                        juego= false;
+                }
+        }
 
         private void inicioBall() {
                 listaball.add(new Ball(310.0, 50.0, 0.5, true));
                 panel.getChildren().add(listaball.getLast().getImageView());
              
+        }
+
+
+        private void movimientoBalls() {
+                for (Ball ball : listaball) {
+                        ball.movimiento();
+                }
         }
 
         private void divisionBall(Ball ball) {
@@ -95,26 +112,83 @@ public class Juego implements Initializable {
 
         }
 
-        public void golpePersonaje(){
-                for (Ball ball : listaball) {
-                        if (personaje.getY() < ball.getImageView().getY()+ (ball.getImageView().getFitHeight())) {
-                                if ((personaje.getX() + (personaje.getFitWidth()) > ball.getImageView().getX())) {
-                                        if (personaje.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
-                                                personaje.setX(0);
-                                                contador -= 1;
-                                                vidas();
-                                        }
-                                }
-
-                        }
-                }
-        }
+       
 
         private void eliminarball() {
                 for (Ball ball : listaball) {
                         panel.getChildren().remove(ball.getImageView());
                 }
                 listaball.clear();
+        }
+
+        public void movimientoPersonaje(){
+                if (!(pressA && pressD)) {
+                        if ((personaje.getX() < 670) && pressD) {
+                                if (derechaI) {
+                                        personaje.setImage(new Image("/imagen/PersonajeDerecha.png"));
+                                        derechaI = false;
+                                } else {
+                                        personaje.setImage(new Image("/imagen/PersonajeDerecha2.png"));
+                                        derechaI = true;
+                                }
+                                personaje.setX(personaje.getX() + 5);
+                        }
+                        if ((personaje.getX() > 0) && pressA) {
+                                if (izquierdaI) {
+                                        personaje.setImage(new Image("/imagen/PersonajeIzquierda.png"));
+                                        izquierdaI = false;
+                                } else {
+                                        personaje.setImage(new Image("/imagen/PersonajeIzquierda2.png"));
+                                        izquierdaI = true;
+                                }
+                                personaje.setX(personaje.getX() - 5);
+                        }
+                } else {
+                        personaje.setImage(imagenpersonaje);
+                }
+        }
+
+        public void golpePersonaje(){
+                
+
+                if(Golpeado){
+                        animationGolpePersonaje();
+                        calculoteporizador= LocalTime.now();
+                        if(tiempoGolpe.isBefore(calculoteporizador)){
+                                System.out.println(tiempoGolpe+"2");
+                                System.out.println(calculoteporizador+"1");
+                                Golpeado = false;
+                                personaje.setOpacity(1.0);
+                        }
+                }
+                else{
+                        for (Ball ball : listaball) {
+                                if (personaje.getY() < ball.getImageView().getY()+ (ball.getImageView().getFitHeight())) {
+                                        if ((personaje.getX() + (personaje.getFitWidth()) > ball.getImageView().getX())) {
+                                                if (personaje.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
+                                                        if(!Golpeado){
+                                                                contador -= 1;
+                                                                vidas();
+                                                                Golpeado = true;
+                                                                calculoteporizador= LocalTime.now();
+                                                                tiempoGolpe = calculoteporizador.plusSeconds(3);
+                                                                break;
+                                                        }
+                                                }
+                                        }
+        
+                                }
+                        }
+                }
+        }
+
+        public void animationGolpePersonaje(){
+                if(personaje.getOpacity() == 0){
+                        personaje.setOpacity(1.0);
+                }
+                else{
+                        personaje.setOpacity(0);     
+                }
         }
 
         public void vidas(){
@@ -150,9 +224,18 @@ public class Juego implements Initializable {
                 }
         }
 
-    
-
-
+        private void temporizador() {
+                calculoteporizador= LocalTime.now();
+                if(temporizador.isAfter(calculoteporizador)){
+                        tiempo.setText(String.valueOf(calculoteporizador.until(temporizador, ChronoUnit.SECONDS)%60));
+                }else{
+                        movimiento.stop();
+                        mensaje.setText("Has Perdido");
+                        eliminarball();
+                        boton.setText("Iniciar");
+                        juego =false;
+                }
+        }
 
        
 
@@ -167,8 +250,8 @@ public class Juego implements Initializable {
                        movimiento.start();
                        contador = 3;
                        vidas();
-                       inicioTemporizador = LocalTime.now();
-                       temporizador = inicioTemporizador.plusSeconds(60);
+                       calculoteporizador = LocalTime.now();
+                       temporizador = calculoteporizador.plusSeconds(60);
                        tiempo.setText("60");
 
                }else{
@@ -218,88 +301,52 @@ public class Juego implements Initializable {
 
         AnimationTimer movimiento = new AnimationTimer() {
                 @Override
-                public void handle(long currentTime) {
-                        if (!(pressA && pressD)) {
-                                if ((personaje.getX() < 670) && pressD) {
-                                        if (derechaI) {
-                                                personaje.setImage(new Image("/imagen/PersonajeDerecha.png"));
-                                                derechaI = false;
-                                        } else {
-                                                personaje.setImage(new Image("/imagen/PersonajeDerecha2.png"));
-                                                derechaI = true;
-                                        }
-                                        personaje.setX(personaje.getX() + 5);
-                                }
-                                if ((personaje.getX() > 0) && pressA) {
-                                        if (izquierdaI) {
-                                                personaje.setImage(new Image("/imagen/PersonajeIzquierda.png"));
-                                                izquierdaI = false;
-                                        } else {
-                                                personaje.setImage(new Image("/imagen/PersonajeIzquierda2.png"));
-                                                izquierdaI = true;
-                                        }
-                                        personaje.setX(personaje.getX() - 5);
-                                }
-                        } else {
-                                personaje.setImage(imagenpersonaje);
-                        }
-                        for (Ball ball : listaball) {
-                                ball.movimiento();
-                        }
-                        if (listaball.size() == 0) {
-                                mensaje.setText("Has ganado");
-                                boton.setText("Iniciar");
-                                juego= false;
-                        }
-                        inicioTemporizador= LocalTime.now();
-                        if(temporizador.isAfter(inicioTemporizador)){
-                                tiempo.setText(String.valueOf(inicioTemporizador.until(temporizador, ChronoUnit.SECONDS)%60));
-                        }else{
-                                movimiento.stop();
-                                mensaje.setText("Has Perdido");
-                                eliminarball();
-                                boton.setText("Iniciar");
-                                juego =false;
-                        }
+                public void handle(long currentTime) throws ConcurrentModificationException{
+                        victoria();
+                        movimientoPersonaje();
+                        movimientoBalls();
+                        temporizador();
                         golpePersonaje();
+                        movimientodisparo();
+                        colisionBallDisparo();
                 }
+
+
+
+             
         };
 
-        AnimationTimer movimientodisparo = new AnimationTimer() {
-                @Override
-                public void handle(long currentTime) throws ConcurrentModificationException {
-                        for (ImageView imageView : listadisparo) {
-                                if (imageView.getY() == 0) {
-                                        panel.getChildren().remove(imageView);
-                                        listadisparo.remove(imageView);
-                                } else
-                                        imageView.setY(imageView.getY() - 5);
-                        }
+        public void movimientodisparo() {
+                for (ImageView imageView : listadisparo) {
+                        if (imageView.getY() == 0) {
+                                panel.getChildren().remove(imageView);
+                                listadisparo.remove(imageView);
+                        } else imageView.setY(imageView.getY() - 5);
+                        
                 }
-        };
+        }
+       
 
         
 
-        AnimationTimer efectosball = new AnimationTimer() {
-                @Override
-                public void handle(long currentTime) throws ConcurrentModificationException{
-                        for (Ball ball : listaball) {
-                                for (ImageView disparo : listadisparo) {
-                                        if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
-                                                if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
-                                                        if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
-                                                                divisionBall(ball);
-                                                                listadisparo.remove(disparo);
-                                                                panel.getChildren().remove(disparo);
-                                                                panel.getChildren().remove(ball.getImageView());
-                                                        }
+        public void colisionBallDisparo(){
+                for (Ball ball : listaball) {
+                        for (ImageView disparo : listadisparo) {
+                                if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
+                                        if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
+                                                if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
+                                                        divisionBall(ball);
+                                                        listadisparo.remove(disparo);
+                                                        panel.getChildren().remove(disparo);
+                                                        panel.getChildren().remove(ball.getImageView());
                                                 }
-
                                         }
+
                                 }
                         }
                 }
-        };
+        }
+       
 
         @Override
         public void initialize(URL location, ResourceBundle resources) {
@@ -314,8 +361,6 @@ public class Juego implements Initializable {
                 personaje.setViewOrder(0);
                 fondo.setViewOrder(1);
                 fondoJuego.setViewOrder(3);
-                movimientodisparo.start();
-                efectosball.start();
                 mensaje.setText("");
 
         }
