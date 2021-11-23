@@ -53,6 +53,24 @@ public class Juego implements Initializable {
         LinkedList<ImageView> listadisparo = new LinkedList<ImageView>();
         LinkedList<Ball> listaball = new LinkedList<Ball>();
 
+        private void isVictoria(){
+                if (listaball.size() == 0) {
+                        mensaje.setText("Has ganado");
+                        boton.setText("Iniciar");
+                        movimiento.stop();
+                        juego= false;
+                }
+        }
+
+        
+        public void derrota(){
+                movimiento.stop();
+                mensaje.setText("Has Perdido");
+                eliminarball();
+                boton.setText("Iniciar");
+                juego =false;
+        }
+
         private void disparar() {
                 if (listadisparo.size() < 3) {
                         listadisparo.add(new ImageView(imagenDisparo));
@@ -66,13 +84,39 @@ public class Juego implements Initializable {
                 }
 
         }
-        private void victoria(){
-                if (listaball.size() == 0) {
-                        mensaje.setText("Has ganado");
-                        boton.setText("Iniciar");
-                        juego= false;
+
+        public void movimientodisparo() {
+                for (ImageView imageView : listadisparo) {
+                        if (imageView.getY() == 0) {
+                                panel.getChildren().remove(imageView);
+                                listadisparo.remove(imageView);
+                        } else imageView.setY(imageView.getY() - 5);
+                        
                 }
         }
+       
+
+        
+
+        public void colisionBallDisparo(){
+                for (Ball ball : listaball) {
+                        for (ImageView disparo : listadisparo) {
+                                if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
+                                        if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
+                                                if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
+                                                        divisionBall(ball);
+                                                        listadisparo.remove(disparo);
+                                                        panel.getChildren().remove(disparo);
+                                                        panel.getChildren().remove(ball.getImageView());
+                                                }
+                                        }
+
+                                }
+                        }
+                }
+        }
+       
+    
 
         private void inicioBall() {
                 listaball.add(new Ball(310.0, 50.0, 0.5, true));
@@ -213,11 +257,7 @@ public class Juego implements Initializable {
                                         corazon1.setVisible(false);
                                         corazon2.setVisible(false);
                                         corazon3.setVisible(false);
-                                        movimiento.stop();
-                                        mensaje.setText("Has Perdido");
-                                        eliminarball();
-                                        boton.setText("Iniciar");
-                                        juego =false;
+                                        derrota();
                                 }
                         }
 
@@ -229,13 +269,12 @@ public class Juego implements Initializable {
                 if(temporizador.isAfter(calculoteporizador)){
                         tiempo.setText(String.valueOf(calculoteporizador.until(temporizador, ChronoUnit.SECONDS)%60));
                 }else{
-                        movimiento.stop();
-                        mensaje.setText("Has Perdido");
-                        eliminarball();
-                        boton.setText("Iniciar");
-                        juego =false;
+                        derrota();
                 }
         }
+
+
+
 
        
 
@@ -302,7 +341,7 @@ public class Juego implements Initializable {
         AnimationTimer movimiento = new AnimationTimer() {
                 @Override
                 public void handle(long currentTime) throws ConcurrentModificationException{
-                        victoria();
+                        isVictoria();
                         movimientoPersonaje();
                         movimientoBalls();
                         temporizador();
@@ -316,37 +355,7 @@ public class Juego implements Initializable {
              
         };
 
-        public void movimientodisparo() {
-                for (ImageView imageView : listadisparo) {
-                        if (imageView.getY() == 0) {
-                                panel.getChildren().remove(imageView);
-                                listadisparo.remove(imageView);
-                        } else imageView.setY(imageView.getY() - 5);
-                        
-                }
-        }
-       
-
         
-
-        public void colisionBallDisparo(){
-                for (Ball ball : listaball) {
-                        for (ImageView disparo : listadisparo) {
-                                if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
-                                        if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
-                                                if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
-                                                        divisionBall(ball);
-                                                        listadisparo.remove(disparo);
-                                                        panel.getChildren().remove(disparo);
-                                                        panel.getChildren().remove(ball.getImageView());
-                                                }
-                                        }
-
-                                }
-                        }
-                }
-        }
-       
 
         @Override
         public void initialize(URL location, ResourceBundle resources) {
