@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import javafx.animation.AnimationTimer;
@@ -87,34 +88,41 @@ public class Juego implements Initializable {
         }
 
         public void movimientodisparo() {
+                ArrayList<ImageView> listaremove = new ArrayList<ImageView>();
                 for (ImageView imageView : listadisparo) {
                         if (imageView.getY() == 0) {
+                                listaremove.add(imageView);
                                 panel.getChildren().remove(imageView);
-                                listadisparo.remove(imageView);
+                               
                         } else imageView.setY(imageView.getY() - 5);
                         
                 }
+
+                listadisparo.removeAll(listaremove);
         }
        
 
         
 
         public void colisionBallDisparo(){
-                for (Ball ball : listaball) {
-                        for (ImageView disparo : listadisparo) {
+                ArrayList<ImageView> listaremove = new ArrayList<ImageView>();
+                for (ImageView disparo : listadisparo) {
+                        for (Ball ball : listaball) {
                                 if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
                                         if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
                                                 if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
                                                         divisionBall(ball);
-                                                        listadisparo.remove(disparo);
+                                                        listaremove.add(disparo);
                                                         panel.getChildren().remove(disparo);
                                                         panel.getChildren().remove(ball.getImageView());
+                                                        break;
                                                 }
                                         }
 
                                 }
                         }
                 }
+                listadisparo.removeAll(listaremove);
         }
        
     
