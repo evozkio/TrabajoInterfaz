@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import javafx.animation.AnimationTimer;
@@ -208,8 +207,6 @@ public class Juego implements Initializable {
                         animationGolpePersonaje();
                         calculoteporizador= LocalTime.now();
                         if(tiempoGolpe.isBefore(calculoteporizador)){
-                                System.out.println(tiempoGolpe+"2");
-                                System.out.println(calculoteporizador+"1");
                                 Golpeado = false;
                                 personaje.setOpacity(1.0);
                         }
@@ -349,19 +346,15 @@ public class Juego implements Initializable {
 
         AnimationTimer movimiento = new AnimationTimer() {
                 @Override
-                public void handle(long currentTime) throws ConcurrentModificationException{
+                public void handle(long currentTime){
                         isVictoria();
                         movimientoPersonaje();
                         movimientoBalls();
                         temporizador();
                         golpePersonaje();
-                        movimientodisparo();
                         colisionBallDisparo();
+                        movimientodisparo();
                 }
-
-
-
-             
         };
 
         
