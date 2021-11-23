@@ -32,9 +32,10 @@ public class Juego implements Initializable {
         private Image imagenDisparo = new Image("/imagen/disparos.png");
         private Image imagenpersonaje = new Image("/imagen/Personaje.png");
         private LocalTime temporizador;
-        private LocalTime calculoteporizador;
+        private LocalTime calculotemporizador;
         private Boolean Golpeado =false;
         private LocalTime tiempoGolpe;
+        private int nivel = 0;
 
         
 
@@ -55,11 +56,21 @@ public class Juego implements Initializable {
 
         private void isVictoria(){
                 if (listaball.size() == 0) {
-                        movimiento.stop();
-                        mensaje.setText("Has ganado");
-                        eliminarDisparo();
-                        boton.setText("Iniciar");
-                        juego= false;
+                        if(this.nivel ==1){
+                                movimiento.stop();
+                                mensaje.setText("Has ganado");
+                                eliminarDisparo();
+                                boton.setText("Iniciar");
+                                juego= false;
+                                this.nivel =0;
+                        }else{
+                                this.nivel =1;
+                                nivel2();
+                                calculotemporizador = LocalTime.now();
+                                temporizador = calculotemporizador.plusSeconds(63);
+                                eliminarDisparo();
+                                tiempo.setText("60");
+                        }
                 }
         }
 
@@ -127,10 +138,20 @@ public class Juego implements Initializable {
        
     
 
-        private void inicioBall() {
+      
+        private void nivel1(){
                 listaball.add(new Ball(310.0, 50.0, 0.5, true));
-                panel.getChildren().add(listaball.getLast().getImageView());
-             
+                for (Ball ball : listaball) {
+                        panel.getChildren().add(ball.getImageView()) ;
+                }
+        }
+
+        private void nivel2(){
+                listaball.add(new Ball(200.0, 50.0, 0.5, true));
+                listaball.add(new Ball(400.0, 50.0, 0.5, false));
+                for (Ball ball : listaball) {
+                        panel.getChildren().add(ball.getImageView()) ;
+                }
         }
 
 
@@ -213,8 +234,8 @@ public class Juego implements Initializable {
 
                 if(Golpeado){
                         animationGolpePersonaje();
-                        calculoteporizador= LocalTime.now();
-                        if(tiempoGolpe.isBefore(calculoteporizador)){
+                        calculotemporizador= LocalTime.now();
+                        if(tiempoGolpe.isBefore(calculotemporizador)){
                                 Golpeado = false;
                                 personaje.setOpacity(1.0);
                         }
@@ -228,8 +249,8 @@ public class Juego implements Initializable {
                                                                 contador -= 1;
                                                                 vidas();
                                                                 Golpeado = true;
-                                                                calculoteporizador= LocalTime.now();
-                                                                tiempoGolpe = calculoteporizador.plusSeconds(3);
+                                                                calculotemporizador= LocalTime.now();
+                                                                tiempoGolpe = calculotemporizador.plusSeconds(3);
                                                                 break;
                                                         }
                                                 }
@@ -278,13 +299,25 @@ public class Juego implements Initializable {
                 }
         }
 
-        private void temporizador() {
-                calculoteporizador= LocalTime.now();
-                if(temporizador.isAfter(calculoteporizador)){
-                        tiempo.setText(String.valueOf(calculoteporizador.until(temporizador, ChronoUnit.SECONDS)%60));
+        private int temporizador() {
+                calculotemporizador= LocalTime.now();
+                int  valor = (int) calculotemporizador.until(temporizador, ChronoUnit.SECONDS);
+                
+                if(valor>=60){
+                        if (valor==60) {
+                           mensaje.setText("");     
+                        }else{
+                                mensaje.setText(String.valueOf(valor-60));
+                        }
                 }else{
-                        derrota();
+                        if(temporizador.isAfter(calculotemporizador)){
+                                tiempo.setText(String.valueOf(valor));
+                        }else{
+                                derrota();
+                        }
                 }
+
+                return valor;
         }
 
 
@@ -297,14 +330,14 @@ public class Juego implements Initializable {
                if(boton.getText().equals("Iniciar")){
                        boton.setText("disparar");
                        juego= true;
-                       inicioBall();
+                       nivel1();
                        mensaje.setText("");
                        personaje.setX(350);
                        movimiento.start();
                        contador = 3;
                        vidas();
-                       calculoteporizador = LocalTime.now();
-                       temporizador = calculoteporizador.plusSeconds(60);
+                       calculotemporizador = LocalTime.now();
+                       temporizador = calculotemporizador.plusSeconds(60);
                        tiempo.setText("60");
 
                }else{
@@ -355,13 +388,16 @@ public class Juego implements Initializable {
         AnimationTimer movimiento = new AnimationTimer() {
                 @Override
                 public void handle(long currentTime){
-                        isVictoria();
-                        movimientoPersonaje();
-                        movimientoBalls();
-                        temporizador();
-                        golpePersonaje();
-                        colisionBallDisparo();
-                        movimientodisparo();
+
+                        if (temporizador()<=60){
+                                isVictoria();
+                                movimientoPersonaje();
+                                movimientoBalls();
+                                golpePersonaje();
+                                colisionBallDisparo();
+                                movimientodisparo();
+                        }
+                       
                 }
         };
 
