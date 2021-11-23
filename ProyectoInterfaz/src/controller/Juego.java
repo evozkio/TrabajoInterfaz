@@ -55,9 +55,10 @@ public class Juego implements Initializable {
 
         private void isVictoria(){
                 if (listaball.size() == 0) {
-                        mensaje.setText("Has ganado");
-                        boton.setText("Iniciar");
                         movimiento.stop();
+                        mensaje.setText("Has ganado");
+                        eliminarDisparo();
+                        boton.setText("Iniciar");
                         juego= false;
                 }
         }
@@ -66,7 +67,8 @@ public class Juego implements Initializable {
         public void derrota(){
                 movimiento.stop();
                 mensaje.setText("Has Perdido");
-                eliminarball();
+                eliminarBall();
+                eliminarDisparo();
                 boton.setText("Iniciar");
                 juego =false;
         }
@@ -158,11 +160,18 @@ public class Juego implements Initializable {
 
        
 
-        private void eliminarball() {
+        private void eliminarBall() {
                 for (Ball ball : listaball) {
                         panel.getChildren().remove(ball.getImageView());
                 }
                 listaball.clear();
+        }
+
+        private void eliminarDisparo(){
+                for (ImageView disparo : listadisparo) {
+                        panel.getChildren().remove(disparo);
+                }
+                listadisparo.clear();
         }
 
         public void movimientoPersonaje(){
