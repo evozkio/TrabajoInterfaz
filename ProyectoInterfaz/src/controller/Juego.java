@@ -23,22 +23,23 @@ import javafx.scene.layout.AnchorPane;
 import model.Ball;
 
 public class Juego implements Initializable {
-        private Boolean juego = false;
         private int contador = 3;
+        private int nivel = 0;
+
+        private Boolean juego = false;
         private Boolean pressA = false;
         private Boolean pressD = false;
         private Boolean derechaI = true;
         private Boolean izquierdaI = true;
+        private Boolean Golpeado =false;
+
         private Image imagenDisparo = new Image("/imagen/disparos.png");
         private Image imagenpersonaje = new Image("/imagen/Personaje.png");
+
         private LocalTime temporizador;
         private LocalTime calculotemporizador;
-        private Boolean Golpeado =false;
         private LocalTime tiempoGolpe;
-        private int nivel = 0;
-
         
-
         @FXML private Label tiempo;
         @FXML private ImageView fondoJuego;
         @FXML private AnchorPane fondo;
