@@ -32,6 +32,7 @@ public class Juego implements Initializable {
         private Boolean derechaI = true;
         private Boolean izquierdaI = true;
         private Boolean Golpeado =false;
+        private boolean pauseBalls = false;
 
         private Image imagenDisparo = new Image("/imagen/disparos.png");
         private Image imagenpersonaje = new Image("/imagen/Personaje.png");
@@ -39,7 +40,7 @@ public class Juego implements Initializable {
         private LocalTime temporizador;
         private LocalTime calculotemporizador;
         private LocalTime tiempoGolpe;
-        
+
         @FXML private Label tiempo;
         @FXML private ImageView fondoJuego;
         @FXML private AnchorPane fondo;
@@ -120,17 +121,12 @@ public class Juego implements Initializable {
                 ArrayList<ImageView> listaremove = new ArrayList<ImageView>();
                 for (ImageView disparo : listadisparo) {
                         for (Ball ball : listaball) {
-                                if (disparo.getY() < ball.getImageView().getY() + (ball.getImageView().getFitHeight())) {
-                                        if ((disparo.getX() + (disparo.getFitWidth()) > ball.getImageView().getX())) {
-                                                if (disparo.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
-                                                        divisionBall(ball);
-                                                        listaremove.add(disparo);
-                                                        panel.getChildren().remove(disparo);
-                                                        panel.getChildren().remove(ball.getImageView());
-                                                        break;
-                                                }
-                                        }
-
+                                if (ball.calcularColision(disparo)) {
+                                        divisionBall(ball);
+                                        listaremove.add(disparo);
+                                        panel.getChildren().remove(disparo);
+                                        panel.getChildren().remove(ball.getImageView());
+                                        break;
                                 }
                         }
                 }
@@ -243,18 +239,14 @@ public class Juego implements Initializable {
                 }
                 else{
                         for (Ball ball : listaball) {
-                                if (personaje.getY() < ball.getImageView().getY()+ (ball.getImageView().getFitHeight())) {
-                                        if ((personaje.getX() + (personaje.getFitWidth()) > ball.getImageView().getX())) {
-                                                if (personaje.getX() < (ball.getImageView().getX()+ ball.getImageView().getFitWidth())) {
-                                                        if(!Golpeado){
-                                                                contador -= 1;
-                                                                vidas();
-                                                                Golpeado = true;
-                                                                calculotemporizador= LocalTime.now();
-                                                                tiempoGolpe = calculotemporizador.plusSeconds(3);
-                                                                break;
-                                                        }
-                                                }
+                                if (ball.calcularColision(personaje)) {
+                                        if(!Golpeado){
+                                                contador -= 1;
+                                                vidas();
+                                                Golpeado = true;
+                                                calculotemporizador= LocalTime.now();
+                                                tiempoGolpe = calculotemporizador.plusSeconds(3);
+                                                break;
                                         }
         
                                 }
@@ -347,7 +339,7 @@ public class Juego implements Initializable {
         }
 
         @FXML
-        public void mouseClick(MouseEvent mouse) {
+        public void onMouseClick(MouseEvent mouse) {
                 if(juego){
                         if (mouse.getButton().equals(MouseButton.PRIMARY)) {
                                 disparar();
@@ -356,7 +348,7 @@ public class Juego implements Initializable {
         }
 
         @FXML
-        public void pressKey(KeyEvent key) {
+        public void onPressKey(KeyEvent key) {
                 if(juego){
 
                         if (!(pressA && pressD)) {
@@ -375,7 +367,7 @@ public class Juego implements Initializable {
         }
 
         @FXML
-        public void releaseKey(KeyEvent key) {
+        public void onReleaseKey(KeyEvent key) {
                 if (key.getCode().equals(KeyCode.A)) {
                         pressA = false;
                         personaje.setImage(imagenpersonaje);
@@ -386,6 +378,13 @@ public class Juego implements Initializable {
                 }
         }
 
+        @FXML
+        public void onKeyTyped(KeyEvent key) {
+                if(key.getCharacter().equals("x")){
+                        pauseBalls=!pauseBalls;
+                }
+        }
+
         AnimationTimer movimiento = new AnimationTimer() {
                 @Override
                 public void handle(long currentTime){
@@ -393,7 +392,9 @@ public class Juego implements Initializable {
                         if (temporizador()<=60){
                                 isVictoria();
                                 movimientoPersonaje();
-                                movimientoBalls();
+                                if(!pauseBalls){
+                                        movimientoBalls();
+                                }
                                 golpePersonaje();
                                 colisionBallDisparo();
                                 movimientodisparo();

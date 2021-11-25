@@ -4,17 +4,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Ball {
-    ImageView imageView = new ImageView( new Image("/imagen/ball.png"));
-    Double posicionX;
-    Double posicionY;
-    Double ocupa;
-    Boolean direccion;
-    Image imagenBall = new Image("/imagen/ball.png");
-    double dx = 3; 
-    double dy = 1; 
-    double [] punto1;
-    double [] punto2;
-    double [] punto3;
+    private ImageView imageView = new ImageView( new Image("/imagen/ball.png"));
+    private Double posicionX;
+    private Double posicionY;
+    private Double ocupa;
+    private Boolean direccion;
+    private Image imagenBall = new Image("/imagen/ball.png");
+    private Double dx = 3.0; 
+    private Double dy = 1.0; 
+    private ImageView imagenDeColision;
 
     public Ball(){
 
@@ -107,22 +105,23 @@ public class Ball {
         }
     }
 
-    public Boolean hitBoxLeft(double [] cordenada){
-        Double[] punto1 = puntoLeft();
-        Double[] punto2 = puntoCenter();
+    public Boolean hitBoxLeft(){
+        Double imagenTopXRight = imagenDeColision.getX()+imagenDeColision.getFitWidth();
+        Double imagenTopYRight = imagenDeColision.getY();
         
-        Double calculo = (((punto2[1]-punto1[1])/(punto2[0]-punto1[0]))*(cordenada[0]-punto1[0]))-punto1[1];
-
-        if(calculo>cordenada[1]) return true;
+        Double [] cordenada = {imagenTopXRight,imagenTopYRight};
+        
+        if (calculoY(puntoLeft(), puntoCenter(), cordenada))return true;
         return false;
     }
-    public Boolean hitBoxRight(double [] cordenada){
-        Double[] punto1 = puntoRight();
-        Double[] punto2 = puntoCenter();
+    public Boolean hitBoxRight(){
+        Double imagenTopXLeft = imagenDeColision.getX();
+        Double imagenTopYLeft = imagenDeColision.getY();
+        
+        Double [] cordenada = {imagenTopXLeft,imagenTopYLeft};
 
-        Double calculo = (((punto2[1]-punto1[1])/(punto2[0]-punto1[0]))*(cordenada[0]-punto1[0]))-punto1[1];
 
-        if(calculo>cordenada[1]) return true;
+        if (calculoY(puntoLeft(), puntoCenter(), cordenada))return true;
         return false;
     }
 
@@ -146,5 +145,59 @@ public class Ball {
         return punto;
     }
 
+    //Devuelve true cuando es arriba o false si es abajo esto se 
+    //calcula de la cordenada a una linea que se forma con los dos puntos
+    public Boolean calculoY(Double[] punto1,Double[] punto2, Double[] cordenada){
+        Double calculo = ((cordenada[0]-punto1[0])/(punto2[0]-punto1[0])*(punto2[1]-punto1[1]))+punto1[1];
+
+        if(calculo>cordenada[1]) return true;
+        return false;
+    }
+
+    public Boolean calcularColision(ImageView imagen){
+
+        this.imagenDeColision = imagen;
+
+        if (RespectoAbajo() && RespectoLateralDerecho() && RespectoLateralIzquierdo()) {
+          return true;
+                   
+        }
+        return false;
+    }
+
+    public Boolean RespectoAbajo(){
+        if(imagenDeColision.getY() < this.getImageView().getY()+ (this.getImageView().getFitHeight()))return true;
+        return false;
+    }
+
+    public Boolean RespectoLateralDerecho(){
+        if(imagenDeColision.getX() < (this.getImageView().getX()+ this.getImageView().getFitWidth()))return true;
+        return false;
+    }
+
+    public Boolean RespectoLateralIzquierdo(){
+        if(imagenDeColision.getX() + (imagenDeColision.getFitWidth()) > this.getImageView().getX())return true;
+        return false;
+    }
+
 
 }
+
+
+
+
+// if((this.imageView.getY()+(this.imageView.getFitHeight()*3/4))<imagen.getY()){
+//     if (puntoCenter()[0]<imagen.getX()) {
+//         System.out.println("right");
+//         return hitBoxRight();
+//     }
+//     else{
+//         System.out.println("left");
+
+//         return hitBoxLeft();
+//     }
+// }
+// else{
+//     System.out.println("fuera");
+//     return true;  
+// } 
