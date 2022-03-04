@@ -20,7 +20,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+
 import model.Ball;
+
+// import javafx.scene.control.ContextMenu;
+// import javafx.scene.control.MenuItem;
+// import javafx.scene.control.Tooltip;
 
 public class Juego implements Initializable {
         private int contador = 3;
@@ -420,6 +425,43 @@ public class Juego implements Initializable {
                 fondoJuego.setViewOrder(3);
                 mensaje.setText("");
 
+                // borrar();
+
         }
+
+        // public void borrar(){
+        //         ContextMenu contextMenu = new ContextMenu();
+        //         MenuItem menuItem1 = new MenuItem();
+        //         MenuItem menuItem2 = new MenuItem();
+        //         MenuItem menuItem3 = new MenuItem();
+
+        //         menuItem1.setOnAction((event)-> {
+        //                 System.out.println("click 1");
+        //         });
+        //         menuItem2.setOnAction((event)-> {
+        //                 System.out.println("click 2");
+        //         });
+        //         menuItem3.setOnAction((event)-> {
+        //                 System.out.println("click 3");
+        //         });
+        //         contextMenu.getItems().addAll(menuItem1,menuItem2,menuItem3);
+        //         Button boton1 = new Button("Menu");
+        //         boton1.setViewOrder(0);
+        //         boton1.setLayoutX(0);
+        //         boton1.setLayoutY(0);
+        //         panel.getChildren().add(boton1);
+                
+        //         boton1.setContextMenu(contextMenu);
+        //         Button boton2 = new Button("Tooltip");
+        //         boton2.setViewOrder(0);
+        //         boton2.setLayoutX(100);
+        //         boton2.setLayoutY(0);
+        //         panel.getChildren().add(boton2);
+                
+        //         boton1.setContextMenu(contextMenu);
+
+        //         Tooltip tooltip = new Tooltip("text");
+        //         boton2.setTooltip(tooltip);
+        // }
 
 }

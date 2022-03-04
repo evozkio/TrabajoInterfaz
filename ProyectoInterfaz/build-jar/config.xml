@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\Evozkio\Documents\GitHub\TrabajoInterfaz\ProyectoInterfaz\ProyectoInterfaz.jar</jar>
+  <outfile>C:\Users\Evozkio\Documents\GitHub\TrabajoInterfaz\ProyectoInterfaz\build-jar\Juego.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\Evozkio\Downloads\pixlr-bg-result.ico</icon>
+  <jre>
+    <path>C:\Program Files\Java\jdk-17</path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <opt>--module-path C:\javafx-sdk-17.0.0.1\lib --add-modules javafx.controls,javafx.fxml --enable-preview</opt>
+  </jre>
+</launch4jConfig>
